@@ -1,0 +1,40 @@
+version: '3'
+
+volumes:
+  mysql_data:
+      driver: local
+
+services:
+  mysql:
+      container_name: mysql
+      image: mysql:latest
+      volumes:
+        - mysql_data:/var/lib/mysql
+      environment:
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_DATABASE: perlebleu
+        MYSQL_USER: root
+        MYSQL_PASSWORD: issamnacim
+  perlebleuApi:
+      container_name: perlebleu-api
+      image: nacimissam/perlebleu
+      environment:
+        DB_VENDOR: MYSQL
+        DB_ADDR: host.docker.internal
+        DB_DATABASE: perlebleu
+        DB_USER: root
+        DB_PASSWORD: issamnacim
+        #KEYCLOAK_USER: admin
+        #KEYCLOAK_PASSWORD: admin
+        #Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the MySQL JDBC driver documentation in order to use it.
+        #JDBC_PARAMS: "connectTimeout=30000"
+      ports:
+        - 8768:8768
+      networks:
+        - auth-network
+      depends_on:
+        - mysql
+
+networks:
+  auth-network:
+    driver: bridge
